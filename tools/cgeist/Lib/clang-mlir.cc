@@ -1095,6 +1095,22 @@ ValueCategory MLIRScanner::VisitPredefinedExpr(clang::PredefinedExpr *expr) {
 }
 
 ValueCategory MLIRScanner::VisitInitListExpr(clang::InitListExpr *expr) {
+  if (expr->getNumInits() == 0) {
+    mlir::Type elemType = getMLIRType(expr->getType());
+    
+    if (elemType.isIntOrIndex()) {
+      auto zero = builder.create<mlir::arith::ConstantOp>(
+          getMLIRLocation(expr->getBeginLoc()),
+          builder.getIntegerAttr(elemType, 0));
+      return ValueCategory(zero, false); 
+    }
+    else if (elemType.isa<mlir::FloatType>()) {
+      auto zero = builder.create<mlir::arith::ConstantOp>(
+          getMLIRLocation(expr->getBeginLoc()),
+          builder.getFloatAttr(elemType, 0.0));
+      return ValueCategory(zero, false);
+    }
+  }
   mlir::Type subType = getMLIRType(expr->getType());
   bool isArray = false;
   bool LLVMABI = false;
