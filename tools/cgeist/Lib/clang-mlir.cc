@@ -1526,7 +1526,7 @@ MLIRScanner::VisitCXXScalarValueInitExpr(clang::CXXScalarValueInitExpr *expr) {
   mlir::Type melem = Glob.getMLIRType(expr->getType(), &isArray);
   assert(!isArray);
 
-  if (melem.isa<mlir::IntegerType>())
+  if (melem.isIntOrIndex())
     return ValueCategory(builder.create<ConstantIntOp>(loc, 0, melem), false);
   else if (auto MT = dyn_cast<mlir::MemRefType>(melem))
     return ValueCategory(
