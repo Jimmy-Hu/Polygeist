@@ -1095,7 +1095,8 @@ ValueCategory MLIRScanner::VisitPredefinedExpr(clang::PredefinedExpr *expr) {
 }
 
 ValueCategory MLIRScanner::VisitInitListExpr(clang::InitListExpr *expr) {
-  if (expr->getNumInits() == 0) {
+  if (expr->getNumInits() == 0 || 
+       (expr->getNumInits() == 1 && llvm::isa<clang::ImplicitValueInitExpr>(expr->getInit(0)))) {
     mlir::Type elemType = getMLIRType(expr->getType());
     
     if (elemType.isIntOrIndex()) {
