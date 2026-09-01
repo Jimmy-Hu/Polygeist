@@ -747,8 +747,8 @@ MLIRScanner::VisitImplicitValueInitExpr(clang::ImplicitValueInitExpr *decl) {
     return ValueCategory(builder.create<ConstantFloatOp>(
                              loc, APFloat(FT.getFloatSemantics(), "0"), FT),
                          /*isReference*/ false);
-  if (auto IT = dyn_cast<mlir::IntegerType>(Mty))
-    return ValueCategory(builder.create<ConstantIntOp>(loc, 0, IT),
+  if (Mty.isIntOrIndex())
+    return ValueCategory(builder.create<ConstantIntOp>(loc, 0, Mty),
                          /*isReference*/ false);
   if (auto MT = dyn_cast<mlir::MemRefType>(Mty))
     return ValueCategory(
